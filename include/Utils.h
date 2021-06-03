@@ -1,0 +1,10 @@
+#pragma once
+
+#include <vector>
+#include <string>
+
+namespace Utils
+{
+    bool getImageStamps(const std::string &folder_path,
+                        std::vector<std::uint64_t> &time_stamps);
+}

@@ -1,0 +1,17 @@
+<launch>
+
+  <!-- Arguments -->
+  <arg name="dataset_folder" value="/home/bjoshi/cave/"/>
+  <arg name="vio_traj_file" value="/home/bjoshi/svin_ws/src/SVIn2/pose-graph/svin_results/svin_2021_06_02_18_25_57.txt"/> 
+  
+  
+  <node name="interpolator" pkg="iccv_utils" type="interpolator" output="screen"> 
+
+    <param name="dataset_path" value="$(arg dataset_folder)"/>
+    <param name="trajectory_file" value="$(arg vio_traj_file)"/>
+
+  </node>
+
+</launch>
+
+
