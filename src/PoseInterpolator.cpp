@@ -51,22 +51,6 @@ bool PoseInterpolator::loadTrajectory(char separator)
 
         // Sanity check.
         Eigen::Vector4d q(data_raw[3], data_raw[4], data_raw[5], data_raw[6]);
-        // Figure out sign for quaternion.
-        if (std::fabs(q(3) + data_raw[6]) < std::fabs(q(3) - data_raw[6]))
-        {
-            q = -q;
-        }
-
-        ROS_FATAL_STREAM_COND(
-            (fabs(q(3) - data_raw[6]) > 1e-3) ||
-                (fabs(q(0) - data_raw[3]) > 1e-3) ||
-                (fabs(q(1) - data_raw[4]) > 1e-3) ||
-                (fabs(q(2) - data_raw[5]) > 1e-3),
-            "parseGTdata: wrong quaternion conversion"
-                << "(" << q(3) << "," << data_raw[6] << ") "
-                << "(" << q(0) << "," << data_raw[3] << ") "
-                << "(" << q(1) << "," << data_raw[4] << ") "
-                << "(" << q(2) << "," << data_raw[5] << ").");
 
         geometry_msgs::Quaternion rot;
         rot.x = q(0);

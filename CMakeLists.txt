@@ -4,14 +4,14 @@ project(iccv_utils)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS 
-            sensor_msgs cv_bridge roscpp geometry_msgs message_filters)
+            sensor_msgs cv_bridge roscpp geometry_msgs message_filters roslib)
 
 find_package(Eigen3 3 REQUIRED)
 find_package(OpenCV 3 REQUIRED)
 
 catkin_package(
 		INCLUDE_DIRS include
-		CATKIN_DEPENDS sensor_msgs geometry_msgs cv_bridge roscpp  message_filters 
+		CATKIN_DEPENDS sensor_msgs geometry_msgs cv_bridge roscpp  message_filters roslib
 		LIBRARIES ${PROJECT_NAME}
 )
 # do not wildcard install files since the root folder of the package will contain a debian folder for releasing
@@ -40,3 +40,6 @@ target_link_libraries(interpolator iccv_utils)
 
 add_executable(recorder src/record_traj.cpp)
 target_link_libraries(recorder ${catkin_LIBRARIES})
+
+add_executable(traj_aligner src/correct_traj.cpp)
+target_link_libraries(traj_aligner ${catkin_LIBRARIES})
