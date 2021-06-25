@@ -1,0 +1,17 @@
+<launch>
+
+  <!-- Arguments -->
+  <arg name="stamp" value="1532199346.201443481"/>
+  <arg name="vio_traj_file" value="$(find iccv_utils)/traj/svin_loop.txt"/> 
+  
+  
+  <node name="image_pose_test" pkg="iccv_utils" type="image_pose_test" output="screen"> 
+
+    <param name="stamp" value="$(arg stamp)"/>
+    <param name="trajectory_file" value="$(arg vio_traj_file)"/>
+
+  </node>
+
+</launch>
+
+

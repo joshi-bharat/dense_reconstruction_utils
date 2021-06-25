@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
             sensor_msgs cv_bridge roscpp geometry_msgs message_filters roslib)
 
 find_package(Eigen3 3 REQUIRED)
-find_package(OpenCV 3 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 catkin_package(
 		INCLUDE_DIRS include
@@ -43,3 +43,6 @@ target_link_libraries(recorder ${catkin_LIBRARIES})
 
 add_executable(traj_aligner src/correct_traj.cpp)
 target_link_libraries(traj_aligner ${catkin_LIBRARIES})
+
+add_executable(image_pose_test src/image_pose_test.cpp)
+target_link_libraries(image_pose_test iccv_utils)
