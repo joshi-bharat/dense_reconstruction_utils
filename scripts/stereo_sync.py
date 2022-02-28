@@ -71,7 +71,7 @@ class StereoSync:
             stamp = max(left_timestamp, right_timestamp)
 
             left_image = self.bridge.imgmsg_to_cv2(
-                left_img_msg, desired_encoding='passthrough')
+                left_img_msg, desired_encoding='bgr8')
             if (self.scale != 1):
                 left_image = cv2.resize(left_image, size)
             cv2.imwrite(os.path.join(self.left_img_data_folder,
@@ -80,7 +80,7 @@ class StereoSync:
                 str(stamp), '{}.png'.format(str(stamp))))
 
             right_image = self.bridge.imgmsg_to_cv2(
-                right_img_msg, desired_encoding='passthrough')
+                right_img_msg, desired_encoding='bgr8')
 
             if (self.scale != 1):
                 right_image = cv2.resize(right_image, size)

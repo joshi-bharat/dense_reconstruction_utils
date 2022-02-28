@@ -1,0 +1,28 @@
+<launch>
+
+    <!-- Arguments -->
+    <arg name="dataset_folder" value="/home/bjoshi/test/"/>
+    <arg name="scale" value="1.0"/>
+    <!-- <arg name="bag_file" value="/home/bjoshi/Downloads/cave_loop_w_cam_info.bag"/> -->
+
+    <param name="/use_sim_time" value="true"/>
+
+    <!-- To un-compress image topics -->
+    <node name="republish1" type="republish" pkg="image_transport" output="screen" args="compressed in:=/cam_fl/image_raw raw out:=/cam_fl/image_raw" />
+    <node name="republish2" type="republish" pkg="image_transport" output="screen" args="compressed in:=/cam_fr/image_raw raw out:=/cam_fr/image_raw" />
+
+
+    <node name="stereo_sync" pkg="iccv_utils" type="stereo_sync.py" output="screen">
+
+        <remap from="/camera0" to="/cam_fl/image_raw"/>
+        <remap from="/camera1" to="/cam_fr/image_raw"/>
+
+        <param name="dataset_path" value="$(arg dataset_folder)"/>
+        <param name="scale" value="$(arg scale)"/>
+
+
+    </node>
+
+</launch>
+
+
