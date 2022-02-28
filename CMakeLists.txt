@@ -46,3 +46,6 @@ target_link_libraries(traj_aligner ${catkin_LIBRARIES})
 
 add_executable(image_pose_test src/image_pose_test.cpp)
 target_link_libraries(image_pose_test iccv_utils)
+
+add_executable(pose_interpolation_depth_fusion src/pose_interpolation_depth_fusion.cpp)
+target_link_libraries(pose_interpolation_depth_fusion iccv_utils)

@@ -1,0 +1,19 @@
+<launch>
+
+    <!-- Arguments -->
+    <arg name="image_list_file" value="/home/bjoshi/iccv_ws/src/iccv_utils/test_data/mexico.csv"/>
+    <arg name="vio_traj_file" value="/home/bjoshi/iccv_ws/src/iccv_utils/test_data/svin_mexico_cave_short.txt"/>
+    <arg name="output_file" value="/home/bjoshi/iccv_ws/src/iccv_utils/test_data/svin_traj_iterpolated.txt"/>
+
+
+    <node name="interpolator_depth_fusion" pkg="iccv_utils" type="pose_interpolation_depth_fusion" output="screen" required="true">
+
+        <param name="image_list_file" value="$(arg image_list_file)"/>
+        <param name="trajectory_file" value="$(arg vio_traj_file)"/>
+        <param name="output_file" value="$(arg output_file)"/>
+
+    </node>
+
+</launch>
+
+
