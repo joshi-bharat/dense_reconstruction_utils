@@ -1,0 +1,28 @@
+<launch>
+
+    <!-- Arguments -->
+    <arg name="bag" value="/home/bjoshi/Downloads/cave_mexico_sync_cam_info.bag"/>
+    <arg name="image_dir" default="/home/bjoshi/test"/>
+
+    <arg name="stereo" default="true"/>
+    <arg name="left" default="/slave1/image_raw"/>
+    <arg name="right" default="/slave2/image_raw"/>
+    <arg name="compressed" default="true"/>
+    <arg name="scale" default="0.5"/>
+
+
+    <node name="extract_image" pkg="iccv_utils" type="bag_extract_images" output="screen" required="true">
+
+        <param name="bag" value="$(arg bag)"/>
+        <param name="image_dir" value="$(arg image_dir)"/>
+        <param name="left" value="$(arg left)"/>
+        <param name="right" value="$(arg right)"/>
+        <param name="compressed" value="$(arg compressed)"/>
+        <param name="scale" value="$(arg scale)"/>
+        <param name="stereo" value="$(arg stereo)"/>
+
+    </node>
+
+</launch>
+
+
