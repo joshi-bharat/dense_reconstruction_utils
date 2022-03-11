@@ -4,14 +4,14 @@ project(iccv_utils)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS 
-            sensor_msgs cv_bridge roscpp geometry_msgs message_filters roslib)
+            sensor_msgs cv_bridge roscpp geometry_msgs message_filters roslib rosbag)
 
 find_package(Eigen3 3 REQUIRED)
 find_package(OpenCV REQUIRED)
 
 catkin_package(
 		INCLUDE_DIRS include
-		CATKIN_DEPENDS sensor_msgs geometry_msgs cv_bridge roscpp  message_filters roslib
+		CATKIN_DEPENDS sensor_msgs geometry_msgs cv_bridge roscpp  message_filters roslib rosbag
 		LIBRARIES ${PROJECT_NAME}
 )
 # do not wildcard install files since the root folder of the package will contain a debian folder for releasing
@@ -49,3 +49,6 @@ target_link_libraries(image_pose_test iccv_utils)
 
 add_executable(pose_interpolation_depth_fusion src/pose_interpolation_depth_fusion.cpp)
 target_link_libraries(pose_interpolation_depth_fusion iccv_utils)
+
+add_executable(bag_extract_images src/bag_extract_images.cpp)
+target_link_libraries(bag_extract_images ${catkin_LIBRARIES} -lstdc++fs )

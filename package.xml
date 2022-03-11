@@ -16,7 +16,8 @@
   <depend>roscpp</depend>
   <depend>message_filters</depend>
   <depend>roslib</depend>
-  
+  <depend>rosbag</depend>
+
   <exec_depend>rospy</exec_depend>
 
 </package>
