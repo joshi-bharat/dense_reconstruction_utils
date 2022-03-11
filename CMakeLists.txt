@@ -51,4 +51,4 @@ add_executable(pose_interpolation_depth_fusion src/pose_interpolation_depth_fusi
 target_link_libraries(pose_interpolation_depth_fusion iccv_utils)
 
 add_executable(bag_extract_images src/bag_extract_images.cpp)
-target_link_libraries(bag_extract_images ${catkin_LIBRARIES} -lstdc++fs )
+target_link_libraries(bag_extract_images ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} -lstdc++fs )
