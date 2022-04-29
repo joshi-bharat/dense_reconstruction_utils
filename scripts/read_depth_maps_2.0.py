@@ -124,6 +124,7 @@ def find_specicial_depths_from_colmap(special_depth_names_sequences):
 
     return fused_depth_names
 
+# This function is used for testing, not important
 def showImage():
     # Testing
     #1638570925380233100
@@ -137,40 +138,6 @@ def showImage():
     stereo_pair = np.concatenate([img_l, img_r], axis=1)
     cv2.imshow("stereo_pair", stereo_pair)
     cv2.waitKey(0)
-
-    # if (whole_colmap_depth_map_names[i] == '1638570925380233100'):
-    #     bf = 81.52657986
-    #     disp = 547 - 511
-    #
-    #     depth = bf / disp
-    #     print('depth (by hand) at pixel (547, 404): {0}'.format(depth))
-    #     print('depth (colmap) at pixel (547, 404): {0}'.format(colmap_depth_map[404, 547]))
-    #     print('depth (pipeline) at pixel (547, 404): {0}'.format(pipeline_depth_map[404, 547]))
-    #     print('\n')
-    #     disp = 691 - 659
-    #     depth = bf / disp
-    #     print('depth (by hand) at pixel (691, 347): {0}'.format(depth))
-    #     print('depth (colmap) at pixel (691, 347): {0}'.format(colmap_depth_map[347, 690]))
-    #     print('depth (pipeline) at pixel (691, 347): {0}'.format(pipeline_depth_map[347, 691]))
-    #
-    #     break
-    #
-    # if (whole_colmap_depth_map_names[i] == '1638570994863169100'):
-    #     bf = 81.52657986
-    #     disp = 308 - 285
-    #
-    #     depth = bf / disp
-    #     print('depth (by hand) at pixel (308, 224): {0}'.format(depth))
-    #     print('depth (colmap) at pixel (308, 224): {0}'.format(colmap_depth_map[224, 308]))
-    #     print('depth (pipeline) at pixel (308, 224): {0}'.format(pipeline_depth_map[224, 308]))
-    #     print('\n')
-    #     disp = 227 - 192
-    #     depth = bf / disp
-    #     print('depth (by hand) at pixel (227, 261): {0}'.format(depth))
-    #     print('depth (colmap) at pixel (227, 261): {0}'.format(colmap_depth_map[261, 227]))
-    #     print('depth (pipeline) at pixel (227, 261): {0}'.format(pipeline_depth_map[261, 227]))
-    #
-    #     break
 
 
 def main():
@@ -212,27 +179,10 @@ def main():
         print('{0}: filename: {1}'.format(count, whole_colmap_depth_map_names[i]))
 
         colmap_depth_map_path = whole_colmap_depth_map_paths[i]
-        # print(colmap_depth_map_path)
+
         colmap_depth_map = read_array(colmap_depth_map_path)
 
         # print("height: {0}, width: {1}, ndim: {2}".format(colmap_depth_map.shape[0], colmap_depth_map.shape[1], colmap_depth_map.ndim))
-
-        # Save as pfm and testing
-        # folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/colmap_depths/'
-        # depth_map_absolute_path = folder + whole_depth_map_names[i] + '.pfm'
-        # write_pfm(depth_map_absolute_path, depth_map)
-        # load_depth, _ = read_pfm(depth_map_absolute_path)
-        #
-        # depth_map_absolute_cpp_path = folder + 'cpp/' + depth_map_names[i] + '.pfm'
-        # load_depth_cpp, _ = read_pfm(depth_map_absolute_cpp_path)
-        # if ((depth_map == load_depth_cpp).all()):
-        #     print ('cpp ok')
-        # else:
-        #     tmp = depth_map == load_depth_cpp
-        #     print('cpp not ok')
-        #
-        # if((depth_map == load_depth).all()):
-        #     print ('python ok')
 
 
         # Read pipeline's fused depth map
@@ -243,27 +193,13 @@ def main():
         min_depth, max_depth = 0.0, 35 * 0.14220671809
         colmap_depth_map[colmap_depth_map < min_depth] = min_depth
         colmap_depth_map[colmap_depth_map >= max_depth] = max_depth
-        # print (np.amax(colmap_depth_map))
+
 
         pipeline_depth_map[pipeline_depth_map < min_depth] = min_depth
         pipeline_depth_map[pipeline_depth_map >= max_depth] = max_depth
-        # print (np.amax(pipeline_depth_map))
 
-        # Compute scaling factor to make scale is not off
-        # no_zero_count = 0
-        # scale_array = [[]]
-        # for r in range(colmap_depth_map.shape[0]):
-        #     for c in range(colmap_depth_map.shape[1]):
-        #         if(colmap_depth_map[r, c] != 0 and pipeline_depth_map[r, c] != 0):
-        #             no_zero_count += 1
-        #             scale_array.append(pipeline_depth_map[r, c]/ colmap_depth_map[r, c])
 
-        scale = 2.0  #np.median(scale_array)
-        # print("25-th: {0}, median: {1}, 75-th: {2}".format(np.percentile(scale_array, 25), np.percentile(scale_array, 50), np.percentile(scale_array, 75)))
-        # print("scale: {0}".format(scale))
-        #
-        # # stat_scaling_fators.append("25-th: {0}, median: {1}, 75-th: {2}".format(np.percentile(scale_array, 25), np.percentile(scale_array, 50), np.percentile(scale_array, 75)))
-        # stat_scaling_fators.append([np.percentile(scale_array, 25), np.percentile(scale_array, 50), np.percentile(scale_array, 75)])
+        scale = 2.0  
 
         # Update depth maps from COLMAP
         colmap_depth_map = scale * colmap_depth_map
@@ -292,42 +228,30 @@ def main():
         print('MAE: {0} m'.format(total_depths/no_zero_count))
 
         # Visualize the depth map.
-        # fig, (ax1, ax2) = plt.subplots(1, 2)
-        # norm = mcolors.Normalize(vmin=min_depth, vmax=5.0)
-        #
-        # # For plotting COLMAP
-        # im1 = ax1.imshow(colmap_depth_map, norm=norm, cmap=cm.jet)
-        # ax1.set_title("COLMAP")
-        # plt.colorbar(im1, ax=ax1)
-        # # For plotting Pipeline
-        # im2 = ax2.imshow(pipeline_depth_map, norm=norm, cmap=cm.jet)
-        # ax2.set_title("Pipeline")
-        # plt.colorbar(im2, ax=ax2)
-        #
-        # folder = "/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/results_comparison/comparison_sad_apply_scale_all_2/"
-        # save_path = folder + whole_colmap_depth_map_names[i] + ".png"
-        # plt.savefig(save_path)
-        # #
-        # # # plt.show(block=False)
-        # # # plt.pause(100)
-        # plt.close()
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        norm = mcolors.Normalize(vmin=min_depth, vmax=5.0)
+        
+        # For plotting COLMAP
+        im1 = ax1.imshow(colmap_depth_map, norm=norm, cmap=cm.jet)
+        ax1.set_title("COLMAP")
+        plt.colorbar(im1, ax=ax1)
+        # For plotting Pipeline
+        im2 = ax2.imshow(pipeline_depth_map, norm=norm, cmap=cm.jet)
+        ax2.set_title("Pipeline")
+        plt.colorbar(im2, ax=ax2)
+        
+        folder = "/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/results_comparison/comparison_sad_apply_scale_all_2/"
+        save_path = folder + whole_colmap_depth_map_names[i] + ".png"
+        plt.savefig(save_path)
+
+        # Uncomment following two lines to see how image looks like
+        # # plt.show(block=False)
+        # # plt.pause(100)
+        plt.close()
 
         count += 1
 
-    # with open('/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/scaling_factor_res.txt', 'w') as f:
-    #     for line in stat_scaling_fators:
-    #         f.write(line)
-    #         f.write('\n')
-    # fields = ['25-th', 'median', '75-th']
-    # with open('/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/scaling_factor_res.csv', 'w') as csvfile:
-    #     # Creating a csv writer object
-    #     csvwriter = csv.writer(csvfile)
-    #
-    #     # Writing the fields
-    #     csvwriter.writerow(fields)
-    #
-    #     # Writing the data rows
-    #     csvwriter.writerows(stat_scaling_fators)
+
 
 if __name__ == "__main__":
     main()
