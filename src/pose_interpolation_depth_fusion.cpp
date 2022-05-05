@@ -41,8 +41,12 @@ int main(int argc, char *argv[])
         // std::cout << std::setprecision(16) << "Finding pose at: " << ((double)stamp) / 1000000000 << std::endl;
         if (pose_intr->getPose(stamp, pose))
         {
-            output_stream << original_stamp << " " << pose.orientation.x << " " << pose.orientation.y << " " << pose.orientation.z << " "
-                          << pose.orientation.w << " " << pose.position.x << " " << pose.position.y << " " << pose.position.z << " " << std::endl;
+            // output_stream << original_stamp << " " << pose.orientation.x << " " << pose.orientation.y << " " << pose.orientation.z << " "
+            //               << pose.orientation.w << " " << pose.position.x << " " << pose.position.y << " " << pose.position.z << " " << std::endl;
+
+            output_stream << original_stamp << pose.position.x << " " << pose.position.y << " " << pose.position.z << " "
+                          << pose.orientation.x << " " << pose.orientation.y << " " << pose.orientation.z << " "
+                          << pose.orientation.w << " "<<  std::endl;
         }
         else
         {

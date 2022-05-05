@@ -139,117 +139,177 @@ def showImage():
     cv2.imshow("stereo_pair", stereo_pair)
     cv2.waitKey(0)
 
+def saveFigures(save_path, img, min_depth, max_depth, flag):
+    fig, ax = plt.subplots()
+    norm = mcolors.Normalize(vmin=min_depth, vmax=max_depth)
+    im = ax.imshow(img, norm=norm, cmap=cm.jet)
+    # if (flag == 'prev'):
+    #     ax.set_title("Depth Map of Previous Frame")
+    # elif (flag == 'post'):
+    #     ax.set_title("Depth Map of Post Frame")
+    # elif (flag == 'ref'):
+    #     ax.set_title("Depth Map of Reference Frame")
+    # elif (flag == 'fused'):
+    #     ax.set_title("Fused Depth Map of Reference Frame")
+    # plt.colorbar(im, ax=ax)
 
-def main():
-    args = parse_args()
-    pipeline_folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/pipeline_fused_depths_sad/'
+    plt.savefig(save_path)
+    plt.close()
 
-    pipeline_depth_names = find_specicial_depths_from_colmap(pipeline_folder+'sequences.txt')
+def saveSepartedFigures():
+    # Save seprated images
+    save_figure_flags = ['prev', 'post', 'ref', 'fused', 'conf']
+    save_paths = ['t-1/', 't+1/', 'ref/', 'fused/', 'ref/conf/']
+    save_figures_names = ['1547563346764416199', '1547563347588284400', '1547563347192711899', '1547563347192711899', '1547563347192711899']
+    for i in range(len(save_figure_flags)):
+        pipeline_folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/data/shipwreck/'
+        pipeline_depth_map_absolute_path = pipeline_folder + save_paths[i] + save_figures_names[i] + '.pfm'
 
-    if args.min_depth_percentile > args.max_depth_percentile:
-        raise ValueError("min_depth_percentile should be less than or equal "
-                         "to the max_depth_perceintile.")
-
-    # Read depth/normal maps from folder
-    if not os.path.exists(args.folder):
-        raise FileNotFoundError("Folder not found: {}".format(args.depth_map))
-
-    # Find photometric or geomtric from all COLMAP depths
-    # In other word read depth maps from COLMAP
-    regex_exp = re.compile(r'photometric') if args.photo_metric else re.compile(r'geometric')
-    whole_colmap_depth_map_paths = [os.path.join(args.folder, f) for f in os.listdir(args.folder) if regex_exp.search(f)]
-    whole_colmap_depth_map_paths.sort()
-
-
-    # Get the name of depth map of COLMAP in whole sequence eg:1638570925380233100
-    patten = args.folder + '(.+?).png.geometric.bin'
-    whole_colmap_depth_map_names_2d = [re.findall(patten, depth_map_path) for depth_map_path in whole_colmap_depth_map_paths]
-    whole_colmap_depth_map_names = [i for iterm in whole_colmap_depth_map_names_2d for i in iterm] # eg: whole_colmap_depth_map_names = [1638570925380233100, 1638570925380233101]
-    whole_colmap_depth_map_names.sort()
-
-    # Write to depth scaling factor
-    stat_scaling_fators = []
-    count = 1
-
-    # showImage()
-    for i in range(len(whole_colmap_depth_map_paths)):
-
-        if whole_colmap_depth_map_names[i] not in pipeline_depth_names:
-            continue
-        print('{0}: filename: {1}'.format(count, whole_colmap_depth_map_names[i]))
-
-        colmap_depth_map_path = whole_colmap_depth_map_paths[i]
-
-        colmap_depth_map = read_array(colmap_depth_map_path)
-
-        # print("height: {0}, width: {1}, ndim: {2}".format(colmap_depth_map.shape[0], colmap_depth_map.shape[1], colmap_depth_map.ndim))
-
-
-        # Read pipeline's fused depth map
-        pipeline_depth_map_absolute_path = pipeline_folder + whole_colmap_depth_map_names[i] + '.pfm'
         pipeline_depth_map, _ = read_pfm(pipeline_depth_map_absolute_path)
 
-        # Compare pipeline's depth map and colmap's
-        min_depth, max_depth = 0.0, 35 * 0.14220671809
-        colmap_depth_map[colmap_depth_map < min_depth] = min_depth
-        colmap_depth_map[colmap_depth_map >= max_depth] = max_depth
-
-
+        min_depth, max_depth = 0.0, 5.0
         pipeline_depth_map[pipeline_depth_map < min_depth] = min_depth
         pipeline_depth_map[pipeline_depth_map >= max_depth] = max_depth
 
+        save_path = pipeline_folder + save_paths[i] + save_figures_names[i] + '.png'
 
-        scale = 2.0  
+        saveFigures(save_path, pipeline_depth_map, min_depth, max_depth, save_figure_flags[i])
 
-        # Update depth maps from COLMAP
-        colmap_depth_map = scale * colmap_depth_map
-        colmap_depth_map[colmap_depth_map < min_depth] = min_depth
-        colmap_depth_map[colmap_depth_map >= max_depth] = max_depth
+def saveColorbar(min_depth = 0.0, max_depth=5.0):
+    pipeline_folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/data/shipwreck/'
+    save_path = pipeline_folder+'colorbar.png'
+    fig, ax = plt.subplots()
 
-        # Compute difference
-        depth_threshold = 0.1  # 0.1 m
-        dif = np.absolute(pipeline_depth_map - colmap_depth_map)
-
-        inliear_count = 0
-        no_zero_count = 0
-        total_depths = 0.0
-
-        for r in range(dif.shape[0]):
-            for c in range(dif.shape[1]):
-                if colmap_depth_map[r, c] != 0.0 or pipeline_depth_map[r, c] != 0.0:
-                    if dif[r, c] <= depth_threshold:
-                        inliear_count += 1
-                    no_zero_count += 1
-                    total_depths += dif[r, c]
+    norm = mcolors.Normalize(vmin=min_depth, vmax=max_depth)
+    im = cm.ScalarMappable(norm=norm, cmap=cm.jet)
+    im.set_array([])
+    # plt.colorbar(im, ax=ax, orientation ='vertical', label = 'Depth range from 0 meter to 5 meters')
+    plt.colorbar(im, ax=ax, orientation ='horizontal', label = 'Depth range from 0 meter to 5 meters')
+    plt.savefig(save_path)
+    plt.close()
 
 
+def main():
+    # args = parse_args()
+    # # pipeline_folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/pipeline_fused_depths_sad/'
+    # pipeline_folder = '/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/data/'
+    #
+    # pipeline_depth_names = find_specicial_depths_from_colmap(pipeline_folder+'sequences.txt')
+    #
+    # if args.min_depth_percentile > args.max_depth_percentile:
+    #     raise ValueError("min_depth_percentile should be less than or equal "
+    #                      "to the max_depth_perceintile.")
+    #
+    # # Read depth/normal maps from folder
+    # if not os.path.exists(args.folder):
+    #     raise FileNotFoundError("Folder not found: {}".format(args.depth_map))
+    #
+    # # Find photometric or geomtric from all COLMAP depths
+    # # In other word read depth maps from COLMAP
+    # regex_exp = re.compile(r'photometric') if args.photo_metric else re.compile(r'geometric')
+    # whole_colmap_depth_map_paths = [os.path.join(args.folder, f) for f in os.listdir(args.folder) if regex_exp.search(f)]
+    # whole_colmap_depth_map_paths.sort()
+    #
+    #
+    # # Get the name of depth map of COLMAP in whole sequence eg:1638570925380233100
+    # patten = args.folder + '(.+?).png.geometric.bin'
+    # whole_colmap_depth_map_names_2d = [re.findall(patten, depth_map_path) for depth_map_path in whole_colmap_depth_map_paths]
+    # whole_colmap_depth_map_names = [i for iterm in whole_colmap_depth_map_names_2d for i in iterm] # eg: whole_colmap_depth_map_names = [1638570925380233100, 1638570925380233101]
+    # whole_colmap_depth_map_names.sort()
+    #
+    # # Write to depth scaling factor
+    # stat_scaling_fators = []
+    # count = 1
+    #
+    # # showImage()
+    # for i in range(len(whole_colmap_depth_map_paths)):
+    #
+    #     if whole_colmap_depth_map_names[i] not in pipeline_depth_names:
+    #         continue
+    #     print('{0}: filename: {1}'.format(count, whole_colmap_depth_map_names[i]))
+    #
+    #     colmap_depth_map_path = whole_colmap_depth_map_paths[i]
+    #
+    #     colmap_depth_map = read_array(colmap_depth_map_path)
+    #
+    #     # print("height: {0}, width: {1}, ndim: {2}".format(colmap_depth_map.shape[0], colmap_depth_map.shape[1], colmap_depth_map.ndim))
+    #
+    #
+    #     # Read pipeline's fused depth map
+    #     pipeline_depth_map_absolute_path = pipeline_folder + whole_colmap_depth_map_names[i] + '.pfm'
+    #     pipeline_depth_map, _ = read_pfm(pipeline_depth_map_absolute_path)
+    #
+    #     # Compare pipeline's depth map and colmap's
+    #     min_depth, max_depth = 0.0, 35 * 0.14220671809
+    #     colmap_depth_map[colmap_depth_map < min_depth] = min_depth
+    #     colmap_depth_map[colmap_depth_map >= max_depth] = max_depth
+    #
+    #
+    #     pipeline_depth_map[pipeline_depth_map < min_depth] = min_depth
+    #     pipeline_depth_map[pipeline_depth_map >= max_depth] = max_depth
+    #
+    #
+    #     scale = 2.0
+    #
+    #     # Update depth maps from COLMAP
+    #     colmap_depth_map = scale * colmap_depth_map
+    #     colmap_depth_map[colmap_depth_map < min_depth] = min_depth
+    #     colmap_depth_map[colmap_depth_map >= max_depth] = max_depth
+    #
+    #     # Compute difference
+    #     depth_threshold = 0.1  # 0.1 m
+    #     dif = np.absolute(pipeline_depth_map - colmap_depth_map)
+    #
+    #     inliear_count = 0
+    #     no_zero_count = 0
+    #     total_depths = 0.0
+    #
+    #     for r in range(dif.shape[0]):
+    #         for c in range(dif.shape[1]):
+    #             if colmap_depth_map[r, c] != 0.0 or pipeline_depth_map[r, c] != 0.0:
+    #                 if dif[r, c] <= depth_threshold:
+    #                     inliear_count += 1
+    #                 no_zero_count += 1
+    #                 total_depths += dif[r, c]
+    #
+    #
+    #
+    #     print('There are : {0}/{1} ({2} %) points where depth difference is less than threshold '.format( inliear_count, no_zero_count, float(inliear_count*1.0/no_zero_count*100)))
+    #     print('MAE: {0} m'.format(total_depths/no_zero_count))
+    #
+    #     # Visualize the depth map.
+    #     # fig, (ax1, ax2) = plt.subplots(1, 2)
+    #     # norm = mcolors.Normalize(vmin=min_depth, vmax=5.0)
+    #     #
+    #     # # For plotting COLMAP
+    #     # im1 = ax1.imshow(colmap_depth_map, norm=norm, cmap=cm.jet)
+    #     # ax1.set_title("COLMAP")
+    #     # plt.colorbar(im1, ax=ax1)
+    #     # # For plotting Pipeline
+    #     # im2 = ax2.imshow(pipeline_depth_map, norm=norm, cmap=cm.jet)
+    #     # ax2.set_title("Pipeline")
+    #     # plt.colorbar(im2, ax=ax2)
+    #     #
+    #     # # folder = "/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/results_comparison/comparison_sad_apply_scale_all_2/"
+    #     # folder = "/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/results_comparison/"
+    #     # save_path = folder + whole_colmap_depth_map_names[i] + ".png"
+    #     # plt.savefig(save_path)
+    #     #
+    #     # # Uncomment following two lines to see how image looks like
+    #     # # plt.show(block=False)
+    #     # # plt.pause(10000)
+    #     # plt.close()
 
-        print('There are : {0}/{1} ({2} %) points where depth difference is less than threshold '.format( inliear_count, no_zero_count, float(inliear_count*1.0/no_zero_count*100)))
-        print('MAE: {0} m'.format(total_depths/no_zero_count))
+    # Save seperated images
+    # saveSepartedFigures()
+    saveColorbar()
 
-        # Visualize the depth map.
-        fig, (ax1, ax2) = plt.subplots(1, 2)
-        norm = mcolors.Normalize(vmin=min_depth, vmax=5.0)
-        
-        # For plotting COLMAP
-        im1 = ax1.imshow(colmap_depth_map, norm=norm, cmap=cm.jet)
-        ax1.set_title("COLMAP")
-        plt.colorbar(im1, ax=ax1)
-        # For plotting Pipeline
-        im2 = ax2.imshow(pipeline_depth_map, norm=norm, cmap=cm.jet)
-        ax2.set_title("Pipeline")
-        plt.colorbar(im2, ax=ax2)
-        
-        folder = "/home/wangweihan/Documents/my_project/underwater_project/code/IROS/Examples/Mexico/data/results_comparison/comparison_sad_apply_scale_all_2/"
-        save_path = folder + whole_colmap_depth_map_names[i] + ".png"
-        plt.savefig(save_path)
 
-        # Uncomment following two lines to see how image looks like
-        # # plt.show(block=False)
-        # # plt.pause(100)
-        plt.close()
 
-        count += 1
+
+
+
+        # count += 1
 
 
 
