@@ -15,7 +15,7 @@ public:
     PoseInterpolator(std::string &traj_file);
     ~PoseInterpolator() = default;
 
-    bool loadTrajectory(char separator = ' ');
+    bool loadTrajectory(char separator = ' ', bool skip_header = true);
     bool getPose(const std::uint64_t &timestamp, geometry_msgs::Pose &pose);
 
 private:

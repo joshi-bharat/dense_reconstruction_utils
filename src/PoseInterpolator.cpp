@@ -13,7 +13,7 @@ PoseInterpolator::PoseInterpolator(std::string &traj_file)
     ROS_FATAL_STREAM_COND(traj_file_.empty(), "Trajectory file " << traj_file_ << " is empty.");
 }
 
-bool PoseInterpolator::loadTrajectory(char separator)
+bool PoseInterpolator::loadTrajectory(char separator, bool skip_header)
 {
     ROS_INFO_STREAM("Parsing VIO trajectory data ....");
     std::ifstream fin(traj_file_.c_str());
@@ -87,7 +87,7 @@ bool PoseInterpolator::getPose(const std::uint64_t &timestamp, geometry_msgs::Po
     }
     else if (itr_low->first == timestamp)
     {
-        //Exactly matches
+        // Exactly matches
         pose.position = itr_low->second.position;
         pose.orientation = itr_low->second.orientation;
         return true;
