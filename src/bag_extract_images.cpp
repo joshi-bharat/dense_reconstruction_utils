@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
             ss << std::fixed << image_msg->header.stamp;
             stamp = std::to_string(image_msg->header.stamp.toNSec());
         }
-        std::string filename = left_image_dir + "/" + stamp + ".png";
+        std::string filename = left_image_dir + "/" + ss.str() + ".png";
         image_list << ss.str() << "," << stamp << ".png" << std::endl;
 
         // cv::imshow("image", image);
@@ -122,20 +122,26 @@ int main(int argc, char *argv[])
 
     for (auto it = view_right.begin(); it != view_right.end(); ++it)
     {
+        std::stringstream ss;
         std::string stamp;
         if (compressed)
         {
             sensor_msgs::CompressedImageConstPtr image_msg = it->instantiate<sensor_msgs::CompressedImage>();
             image = cv_bridge::toCvCopy(image_msg, sensor_msgs::image_encodings::BGR8)->image;
             stamp = std::to_string(image_msg->header.stamp.toNSec());
+            ss.precision(9);
+            ss << std::fixed << image_msg->header.stamp;
         }
         else
         {
             sensor_msgs::ImageConstPtr image_msg = it->instantiate<sensor_msgs::Image>();
             image = cv_bridge::toCvCopy(image_msg, sensor_msgs::image_encodings::BGR8)->image;
             stamp = std::to_string(image_msg->header.stamp.toNSec());
+            ss.precision(9);
+            ss << std::fixed << image_msg->header.stamp;
         }
-        std::string filename = right_image_dir + "/" + stamp + ".png";
+
+        std::string filename = right_image_dir + "/" + ss.str() + ".png";
         cv::resize(image, image, cv::Size(new_width, new_height));
         cv::imwrite(filename, image);
     }
