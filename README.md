@@ -56,3 +56,9 @@ roslaunch iccv_utils pose_interpolation_test.launch
 ```
 
 More details on implementation can be found at [PoseInterpolator.cpp](https://github.com/joshi-bharat/iccv_utils/blob/main/src/PoseInterpolator.cpp) based on [slerp implemenation of ROS tf2 library.](http://docs.ros.org/en/jade/api/tf/html/c++/classtf_1_1Quaternion.html#affa098b16b0091af8b71bfb533b5494a)
+
+## Visualize the trajectory
+Install [evo](https://github.com/MichaelGrupp/evo) python package
+```bash
+pip install evo --upgrade --no-binary evo
+```
